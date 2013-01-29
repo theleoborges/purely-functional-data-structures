@@ -150,3 +150,27 @@
                     (partition 2 2 [nil] heaps)))))))
 
 
+
+;;
+;; Binomial Heaps
+;;
+
+(defn mk-binomial-heap [rank value children]
+  {:rank rank :value value :children children})
+
+
+(defn link-binomial-heaps [{rank :rank value-a :value children-a :children :as heap-a}
+                           {value-b :value children-b :children :as heap-b}]
+  (if (<= value-a value-b)
+    (mk-binomial-heap (inc rank) value-a (cons heap-b children-a))
+    (mk-binomial-heap (inc rank) value-b (cons heap-a children-b))))
+
+(defn insert-into-binomial-heap* [heap [head & tail :as heaps]]
+  (if (or (empty? heaps)
+          (< (heap-rank heap) (:rank head)))  (cons heap heaps)
+          (insert-into-binomial-heap* (link-binomial-heaps heap head)
+                                      tail)))
+
+(defn insert-into-binomial-heap [value heaps]
+  (insert-into-binomial-heap* (mk-binomial-heap 0 value [])
+                              heaps))
