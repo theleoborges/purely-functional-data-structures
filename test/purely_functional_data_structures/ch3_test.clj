@@ -154,11 +154,18 @@
              2))))
 
   (testing "finding min heap"
-    (let [heaps (binomial-heap-from-list [1 2 7 5 6 10 8])]
+    (let [heaps (binomial-heap-from-list [1 2 7 5 6 10 8])
+          expected-min {:rank 2, :value 1,
+                        :children [{:rank 1, :value 5,
+                                    :children [{:rank 0, :value 7,
+                                                :children []}]}
+                                   {:rank 0, :value 2,
+                                    :children []}]}]
       (is (= (find-min-binomial-heap heaps)
-             {:rank 2, :value 1,
-              :children [{:rank 1, :value 5,
-                          :children [{:rank 0, :value 7,
-                                      :children []}]}
-                         {:rank 0, :value 2,
-                          :children []}]})))))
+             expected-min))
+
+      (is (= (rec-find-min-binomial-heap heaps)
+             expected-min))
+
+      (is (= (reduce-find-min-binomial-heap heaps)
+             expected-min)))))

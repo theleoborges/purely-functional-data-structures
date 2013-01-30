@@ -201,3 +201,30 @@
             (insert-into-binomial-heap n acc))
           []
           coll))
+
+;;
+;; Exercises - p23
+;;
+
+;;
+;; 3.5 - Define findMin directly rather than via a call to removeMinTree.
+;;
+
+;; First a recursive solution
+
+(defn rec-find-min-binomial-heap  [[heap-a & rest]]
+  (if (seq rest)
+    (let [heap-b (rec-find-min-binomial-heap rest)] 
+      (if (<= (:value heap-a) (:value heap-b))
+        heap-a
+        heap-b))
+    heap-a))
+
+;; Now using reduce
+
+(defn reduce-find-min-binomial-heap [heaps]
+  (reduce (fn [acc heap]
+            (if (<= (:value acc) (:value heap))
+              acc
+              heap))
+          heaps))
