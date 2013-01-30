@@ -24,8 +24,6 @@
     (cons xs (suffixes (rest xs)))
     (conj [] xs)))
 
-(suffixes [1 2 3 4]) ;; ([1 2 3 4] (2 3 4) (3 4) (4) ())
-
 ;;
 ;; Binary search tree
 ;;

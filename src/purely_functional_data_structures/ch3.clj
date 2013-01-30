@@ -174,3 +174,24 @@
 (defn insert-into-binomial-heap [value heaps]
   (insert-into-binomial-heap* (mk-binomial-heap 0 value [])
                               heaps))
+
+(defn merge-binomial-heaps [[{rank-heap-a :rank :as heap-a} & tail-a :as heaps-a]
+                            [{rank-heap-b :rank :as heap-b} & tail-b :as heaps-b]]
+  (cond
+   (empty? heaps-a) heaps-b
+   (empty? heaps-b) heaps-a   
+   (< rank-heap-a rank-heap-b) (cons heap-a (merge-binomial-heaps tail-a heaps-b))
+   (< rank-heap-b rank-heap-a) (cons heap-b (merge-binomial-heaps heaps-a tail-b))
+   :else (insert-into-binomial-heap* (link-binomial-heaps heap-a heap-b)
+                                     (merge-binomial-heaps tail-a tail-b))))
+
+(defn remove-min-binomial-heap [[{value-heap-a :value :as heap-a} & tail-a :as heaps-a]]
+  (cond (empty? heaps-a) (throw (Exception. "Empty binomial heap"))
+        (= 1 (count heaps-a)) [heap-a []]
+        :else (let [[{value-heap-b :value :as heap-b} heaps-b] (remove-min-binomial-heap tail-a)]
+                (if (< value-heap-a value-heap-b)
+                  [heap-a heaps-b]
+                  [heap-b (cons heap-a heaps-b)]))))
+
+(defn find-min-binomial-heap [heaps]
+  (first (remove-min-binomial-heap heaps)))

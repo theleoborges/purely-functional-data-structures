@@ -135,4 +135,72 @@
              [0 2 3]))
       (is (= (binomial-heap-values
               heaps)
-             [53 23 33 77 24 5 12 12 99 23 17 21 9])))))
+             [53 23 33 77 24 5 12 12 99 23 17 21 9]))))
+
+  (use 'purely-functional-data-structures.ch3 :reload)
+
+  (testing "merging heaps"
+    (let [heap-a (->> (insert-into-binomial-heap 1 [])
+                      (insert-into-binomial-heap 2)
+                      (insert-into-binomial-heap 7)
+                      (insert-into-binomial-heap 5)
+                      (insert-into-binomial-heap 6)
+                      (insert-into-binomial-heap 10)
+                      (insert-into-binomial-heap 8))
+
+          heap-b (->> (insert-into-binomial-heap 9 [])
+                      (insert-into-binomial-heap 5)
+                      (insert-into-binomial-heap 17)
+                      (insert-into-binomial-heap 21)
+                      (insert-into-binomial-heap 99)
+                      (insert-into-binomial-heap 12)
+                      (insert-into-binomial-heap 23)
+                      (insert-into-binomial-heap 12)
+                      (insert-into-binomial-heap 77)
+                      (insert-into-binomial-heap 33)
+                      (insert-into-binomial-heap 24)
+                      (insert-into-binomial-heap 23)
+                      (insert-into-binomial-heap 53))
+
+          merged-heap (merge-binomial-heaps heap-a heap-b)]
+      (is (= (count merged-heap)
+             2))
+
+      (is (= (map :rank merged-heap)
+             [2 4]))))
+  
+  (testing "removing min heap"
+    (let [heaps (->> (insert-into-binomial-heap 1 [])
+                    (insert-into-binomial-heap 2)
+                    (insert-into-binomial-heap 7)
+                    (insert-into-binomial-heap 5)
+                    (insert-into-binomial-heap 6)
+                    (insert-into-binomial-heap 10)
+                    (insert-into-binomial-heap 8))
+          [min rest] (remove-min-binomial-heap heaps)]
+      (is (= min
+             {:rank 2, :value 1,
+              :children [{:rank 1, :value 5,
+                          :children [{:rank 0, :value 7,
+                                      :children []}]}
+                         {:rank 0, :value 2,
+                          :children []}]}))
+
+      (is (= (count rest)
+             2))))
+
+  (testing "finding min heap"
+    (let [heaps (->> (insert-into-binomial-heap 1 [])
+                    (insert-into-binomial-heap 2)
+                    (insert-into-binomial-heap 7)
+                    (insert-into-binomial-heap 5)
+                    (insert-into-binomial-heap 6)
+                    (insert-into-binomial-heap 10)
+                    (insert-into-binomial-heap 8))]
+      (is (= (find-min-binomial-heap heaps)
+             {:rank 2, :value 1,
+              :children [{:rank 1, :value 5,
+                          :children [{:rank 0, :value 7,
+                                      :children []}]}
+                         {:rank 0, :value 2,
+                          :children []}]})))))
