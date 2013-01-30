@@ -195,3 +195,9 @@
 
 (defn find-min-binomial-heap [heaps]
   (first (remove-min-binomial-heap heaps)))
+
+(defn binomial-heap-from-list [coll]
+  (reduce (fn [acc n]
+            (insert-into-binomial-heap n acc))
+          []
+          coll))
