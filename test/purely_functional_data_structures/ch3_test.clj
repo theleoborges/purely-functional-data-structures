@@ -153,6 +153,17 @@
       (is (= (count rest)
              2))))
 
+  (testing "delete min heap"
+    (let [heaps (binomial-heap-from-list [1 2 7 5 6 10 8])
+          new-heap (delete-min-binomial-heap heaps)]
+      (is (= (binomial-heap-values new-heap)
+             [2 8 5 6 10 7]))
+
+      (is (= (count new-heap)
+             2))))
+  
+(use 'purely-functional-data-structures.ch3 :reload)
+  
   (testing "finding min heap"
     (let [heaps (binomial-heap-from-list [1 2 7 5 6 10 8])
           expected-min {:rank 2, :value 1,

@@ -196,6 +196,11 @@
 (defn find-min-binomial-heap [heaps]
   (first (remove-min-binomial-heap heaps)))
 
+(defn delete-min-binomial-heap [heaps]
+  (let [[{children :children} rest] (remove-min-binomial-heap heaps)]
+    (merge-binomial-heaps (reverse children)
+                          rest)))
+
 (defn binomial-heap-from-list [coll]
   (reduce (fn [acc n]
             (insert-into-binomial-heap n acc))
