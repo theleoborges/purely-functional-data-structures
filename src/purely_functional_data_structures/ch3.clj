@@ -233,3 +233,76 @@
               acc
               heap))
           heaps))
+
+;;
+;; 3.6 - Most of the rank annotation in this representation of
+;; binomial heaps are redundant because we know that the children of
+;; a node of rank r have ranks r-1,...,0 . Thus, we can remove the rank
+;; annotations from each node and instead pair each tree at the top-level with its rank, i.e.,
+;;
+;; datatype Tree = Node of Elem  x Tree list 
+;; type Heap = (int x Tree) list
+;;
+;; Reimplement binomial heaps with this new representation.
+;;
+
+
+(defn mk-node [value children]
+  {:value value :children children})
+
+(defn link-bin-heaps [[rank {value-a :value children-a :children :as heap-a}]
+                      [_    {value-b :value children-b :children :as heap-b}]]
+  (if (<= value-a value-b)
+    [(inc rank) (mk-node value-a (cons heap-b children-a))]
+    [(inc rank) (mk-node value-b (cons heap-a children-b))]))
+
+(defn insert-into-bin-heap* [[rank-a _ :as heap-a]
+                             [[rank-b _ :as head-heap-b] & tail :as heaps-b]]
+  (if (or (empty? heaps-b)
+          (< rank-a rank-b))  (cons heap-a heaps-b)
+          (insert-into-bin-heap* (link-bin-heaps heap-a head-heap-b)
+                                      tail)))
+
+(defn insert-into-bin-heap [value heaps]
+  (insert-into-bin-heap* [0 (mk-node value [])]
+                         heaps))
+
+
+(defn bin-heap-from-list [coll]
+  (reduce (fn [acc n]
+            (insert-into-bin-heap n acc))
+          []
+          coll))
+
+(defn merge-bin-heaps [[[rank-a _ :as heap-a] & tail-a :as heaps-a]
+                       [[rank-b _ :as heap-b] & tail-b :as heaps-b]]
+  (cond
+   (empty? heaps-a) heaps-b
+   (empty? heaps-b) heaps-a   
+   (< rank-a rank-b) (cons heap-a (merge-bin-heaps tail-a heaps-b))
+   (< rank-b rank-a) (cons heap-b (merge-bin-heaps heaps-a tail-b))
+   :else (insert-into-bin-heap* (link-bin-heaps heap-a heap-b)
+                                     (merge-bin-heaps tail-a tail-b))))
+
+(defn remove-min-bin-heap [[[_ {value-heap-a :value} :as heap-a] & tail-a :as heaps-a]]
+  (cond (empty? heaps-a) (throw (Exception. "Empty binomial heap"))
+        (= 1 (count heaps-a)) [heap-a []]
+        :else (let [[[_ {value-heap-b :value} :as heap-b] heaps-b] (remove-min-bin-heap tail-a)]
+                (if (< value-heap-a value-heap-b)
+                  [heap-a heaps-b]
+                  [heap-b (cons heap-a heaps-b)]))))
+
+(defn find-min-bin-heap [heaps]
+  (first (remove-min-bin-heap heaps)))
+
+(defn decorate-heaps-with-rank [rank heaps]
+  (second (reduce (fn [[r result] heap]
+                    (let [new-rank (dec r)]
+                      [new-rank (conj result [new-rank heap])]))
+                  [rank []]
+                  heaps)))
+
+(defn delete-min-bin-heap [heaps]
+  (let [[[min-rank {children :children}] rest] (remove-min-bin-heap heaps)]
+    (merge-bin-heaps (reverse (decorate-heaps-with-rank min-rank children))
+                     rest)))

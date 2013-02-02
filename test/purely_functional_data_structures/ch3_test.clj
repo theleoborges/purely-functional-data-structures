@@ -162,8 +162,6 @@
       (is (= (count new-heap)
              2))))
   
-(use 'purely-functional-data-structures.ch3 :reload)
-  
   (testing "finding min heap"
     (let [heaps (binomial-heap-from-list [1 2 7 5 6 10 8])
           expected-min {:rank 2, :value 1,
@@ -179,4 +177,78 @@
              expected-min))
 
       (is (= (reduce-find-min-binomial-heap heaps)
+             expected-min))))
+
+
+  (testing "exercise. 3.6 - inserting"
+    (let [heaps (->> (insert-into-bin-heap 1 [])
+                     (insert-into-bin-heap 2)
+                     (insert-into-bin-heap 7)
+                     (insert-into-bin-heap 5)
+                     (insert-into-bin-heap 6)
+                     (insert-into-bin-heap 10)
+                     (insert-into-bin-heap 8))]
+      (is (= (count heaps)
+             3))
+      (is (= (map first heaps)
+             [0 1 2]))
+      (is (= (binomial-heap-values
+              (map second heaps))
+             [8 6 10 1 5 7 2]))
+
+      (is (= heaps)
+          (bin-heap-from-list [1 2 7 5 6 10])))
+
+
+    (let [heaps (bin-heap-from-list [9 5 17 21 99 12 23 12 77 33 24 23 53])]
+      (is (= (count heaps)
+             3))
+      (is (= (map first heaps)
+             [0 2 3]))
+      (is (= (binomial-heap-values
+              (map second heaps))
+             [53 23 33 77 24 5 12 12 99 23 17 21 9]))))
+
+  (testing "exercise. 3.6 - merging heaps"
+    (let [heap-a (bin-heap-from-list [1 2 7 5 6 10 8])
+          heap-b (bin-heap-from-list [9 5 17 21 99 12 23 12 77 33 24 23 53])
+
+          merged-heap (merge-bin-heaps heap-a heap-b)]
+      (is (= (count merged-heap)
+             2))
+
+      (is (= (map first merged-heap)
+             [2 4]))))
+
+
+  (testing "exercise. 3.6 - removing min heap"
+    (let [heaps (bin-heap-from-list [1 2 7 5 6 10 8])
+          [min rest] (remove-min-bin-heap heaps)]
+      (is (= min
+             [2 {:value 1,
+                 :children [{:value 5,
+                             :children [{:value 7, :children []}]}
+                            {:value 2,
+                             :children []}]}]))
+
+      (is (= (count rest)
+             2))))
+
+  (testing "exercise. 3.6 - delete min heap"
+    (let [heaps (bin-heap-from-list [1 2 7 5 6 10 8])
+          new-heap (delete-min-bin-heap heaps)]
+      (is (= (binomial-heap-values (map second new-heap))
+             [2 8 5 6 10 7]))
+
+      (is (= (count new-heap)
+             2))))
+  
+  (testing "exercise. 3.6 - finding min heap"
+    (let [heaps (bin-heap-from-list [1 2 7 5 6 10 8])
+          expected-min [2 {:value 1,
+                           :children [{:value 5,
+                                       :children [{:value 7, :children []}]}
+                                      {:value 2,
+                                       :children []}]}]]
+      (is (= (find-min-bin-heap heaps)
              expected-min)))))
