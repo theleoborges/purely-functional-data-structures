@@ -50,13 +50,12 @@
           {val-other :value left-other :left right-other :right :as other}]
     (cond
      (is-empty? other) this
-     :else (if (<= val-this val-other)
-             (ensure-leftist left-this
-                             (merge right-this other)
-                             val-this)
-             (ensure-leftist left-other
-                             (merge this right-other)
-                             val-other))))
+     (<= val-this val-other) (ensure-leftist left-this
+                                             (merge right-this other)
+                                             val-this)
+     :else (ensure-leftist left-other
+                           (merge this right-other)
+                           val-other)))
   
   (insert [this v]
     (merge (->LeftistHeap 1 v nil nil)
@@ -93,13 +92,12 @@
   (cond
    (nil? heap-a) heap-b
    (nil? heap-b) heap-a
-   :else (if (<= val-a val-b)
-           (ensure-leftist-heap val-a
-                                left-a
-                                (merge-heaps right-a heap-b))
-           (ensure-leftist-heap val-b
-                                left-b
-                                (merge-heaps heap-a right-b)))))
+   (<= val-a val-b) (ensure-leftist-heap val-a
+                                         left-a
+                                         (merge-heaps right-a heap-b))
+   :else (ensure-leftist-heap val-b
+                              left-b
+                              (merge-heaps heap-a right-b))))
 
 (defn heap-insert [value heap]
   (merge-heaps (mk-heap 1 value nil nil)
