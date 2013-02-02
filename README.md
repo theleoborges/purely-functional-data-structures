@@ -1,13 +1,11 @@
 # purely-functional-data-structures
 
-A Clojure library designed to ... well, that part is up to you.
+Clojure code and solutions to the book [Purely Functional Data Structures](http://amzn.to/UcIidh).
 
-## Usage
 
-FIXME
 
 ## License
 
-Copyright © 2012 FIXME
+Copyright © 2012 [Leonardo Borges](http://www.leonardoborges.com)
 
 Distributed under the Eclipse Public License, the same as Clojure.
