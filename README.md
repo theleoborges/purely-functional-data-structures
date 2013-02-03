@@ -1,6 +1,6 @@
 # purely-functional-data-structures
 
-Clojure code and solutions to the book [Purely Functional Data Structures](http://amzn.to/UcIidh).
+Clojure versions of the code and solutions from the book [Purely Functional Data Structures](http://amzn.to/UcIidh).
 
 
 
