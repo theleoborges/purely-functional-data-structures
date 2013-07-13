@@ -1,5 +1,8 @@
 (ns purely-functional-data-structures.ch3
-  (:refer-clojure :exclude [merge]))
+  (:refer-clojure :exclude [merge])
+  (:use [clojure.core.match :only (match)]
+        [clojure.pprint     :only (pprint)]))
+
 
 ;;
 ;; Chapter 3 - Familiar Data Structures in a Functional Setting
@@ -304,3 +307,120 @@
   (let [[[min-rank {children :children}] rest] (remove-min-bin-heap heaps)]
     (merge-bin-heaps (reverse (decorate-heaps-with-rank min-rank children))
                      rest)))
+
+(defn rb-mk-tree [color left value right]
+  {:color color :left left :value value :right right})
+
+
+(def rb-tree (rb-mk-tree :black
+                         (rb-mk-tree :red ;; left
+                                     (rb-mk-tree :black nil "a" nil) ;;left
+                                     8
+                                     (rb-mk-tree :red ;;right
+                                                 (rb-mk-tree :black nil "b" nil) ;;left
+                                                 11
+                                                 (rb-mk-tree :black nil "c" nil))) ;;right
+                         13
+                         (rb-mk-tree :black nil "d" nil) ;;right
+                         ))
+
+
+
+(comment
+
+  (defn rb-balance [tree]
+    (let [{z :value d :right} tree
+          {x-color :color x :value a :left} (-> tree :left)
+          {y-color :color y :value b :left c :right} (-> tree :left :right)
+          d (:right tree)]
+      (if (and (= x-color :red) (= y-color :red))
+        (rb-mk-tree :red
+                    (rb-mk-tree :black a x b)
+                    y
+                    (rb-mk-tree :black c z d))
+        tree))))
+
+
+
+
+(defn rb-balance [tree]
+  (match [tree]
+         [(:or {:left {:color :red
+                       :left {:color :red :left a :value x :right b}
+                       :value y :right c}
+                :value z :right d}
+
+               {:left {:color :red                    
+                       :left  a :value x
+                       :right {:color :red :value y :left b :right c}}
+                :value z :right d}
+
+               {:left a :value x
+                :right {:color :red
+                        :left {:color :red
+                               :left b :value y :right c}
+                        :value z :right d}}
+
+               {:left a :value x
+                :right {:color :red
+                        :left b :value y
+                        :right {:color :red
+                                :left c :value z :right d}}})]
+         (rb-mk-tree :red
+                     (rb-mk-tree :black a x b)
+                     y
+                     (rb-mk-tree :black c z d))
+
+         :else tree))
+
+(def vector-tree
+  [:black [:red
+           [:black nil "a" nil]
+           8
+           [:red
+            [:black nil "b" nil]
+            11
+            [:black nil "c" nil]]]
+   13
+   [:black nil "d" nil]])
+
+(defn balance [node]
+  (match [node]
+         [(:or [:black [:red [:red a x b] y c] z d]
+               [:black [:red a x [:red b y c]] z d]
+               [:black a x [:red [:red b y c] z d]]
+               [:black a x [:red b y [:red c z d]]])] [:red [:black a x b]
+                                                            y
+                                                            [:black c z d]]
+               :else node))
+
+
+(comment
+
+  ;; When core.match supports protocol, this will be
+  ;; awesome.
+  
+  (defrecord Black [left value right])
+  (defrecord Red [left value right])
+
+
+  (def protocol-tree
+    (Black. (Red.
+             (Black. nil "a" nil)
+             8
+             (Red.
+              (Black. nil "b" nil)
+              11
+              (Black. nil "c" nil)))
+            13
+            (Black. nil "d" nil)))
+
+  (defn balance [node]
+    (match [node]
+           [(:or (Black. (Red. (Red. a x b) y c) z d)
+                 (Black. (Red. a x (Red. b y c)) z d)
+                 (Black. a x (Red. (Red. b y c) z d))
+                 (Black. a x (Red. b y (Red. c z d))))] (Red. (Black. a x b)
+                                                              y
+                                                              (Black. c z d))
+                 :else node)))
