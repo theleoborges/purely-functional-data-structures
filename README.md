@@ -2,6 +2,8 @@
 
 Clojure versions of the code and solutions from the book [Purely Functional Data Structures](http://amzn.to/UcIidh).
 
+If you'd like to read the posts I published about the code, visit the [series on my blog](http://www.leonardoborges.com/writings/tags/functional-data-structures/).
+
 
 
 ## License

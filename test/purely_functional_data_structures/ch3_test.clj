@@ -68,9 +68,9 @@
              [1 2 4 7 10 3 20]))))
 
   (testing "Performance"
-    (let [time-O-n (get-time (dotimes [_ 10000] (heap-from-list-O-n (range 100))))
-          time-O-log-n (get-time (dotimes [_ 10000] (heap-from-list-O-log-n (range 100))))]
-      (prn "Creating leftist heap with 100 elemens: ")
+    (let [time-O-n (get-time (dotimes [_ 10000] (heap-from-list-O-n (range 500))))
+          time-O-log-n (get-time (dotimes [_ 10000] (heap-from-list-O-log-n (range 500))))]
+      (prn "Creating a leftist heap with 500 elemens 10k times: ")
       (prn (format "O(n) time: %s" time-O-n))
       (prn (format "O(log n) time: %s" time-O-log-n))      
       (is (< time-O-log-n time-O-n)))))
