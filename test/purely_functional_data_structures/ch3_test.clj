@@ -404,5 +404,29 @@
                       [:black nil "c" nil]
                       "z"
                       [:black nil "d" nil]]]]]
+          (assert-balanced (balance tree))))))
 
-          (assert-balanced (balance tree)))))))
+  (testing "Vector-based red-black trees: insert"
+    (let [tree (-> (insert nil 10)
+                   (insert 5)
+                   (insert 7)
+                   (insert 1)
+                   (insert 14))]
+      (is (= tree
+             [:black
+              [:black [:red nil 1 nil] 5 nil]
+              7
+              [:black nil 10 [:red nil 14 nil]]]))))
+
+  (testing "Vector-based red-black trees: membership"
+    (let [tree (-> (insert nil 10)
+                   (insert 5)
+                   (insert 7)
+                   (insert 1)
+                   (insert 14))]
+      (are [x y] (= x y)
+           true  (is-member? tree 10)
+           true  (is-member? tree 7)
+           true  (is-member? tree 14)
+           false (is-member? tree 20)
+           false (is-member? tree 2)))))

@@ -334,6 +334,8 @@
 
 (comment
 
+  ;; My first attempt - far from ideal without pattern-matching 
+  
   (defn rb-balance [tree]
     (let [{z :value d :right} tree
           {x-color :color x :value a :left} (-> tree :left)
@@ -390,20 +392,38 @@
    13
    [:black nil "d" nil]])
 
-(defn balance [node]
-  (match [node]
+(defn balance [tree]
+  (match [tree]
          [(:or [:black [:red [:red a x b] y c] z d]
                [:black [:red a x [:red b y c]] z d]
                [:black a x [:red [:red b y c] z d]]
                [:black a x [:red b y [:red c z d]]])] [:red [:black a x b]
                                                             y
                                                             [:black c z d]]
-               :else node))
+               :else tree))
 
+(defn insert [tree x]
+  (let [ins (fn ins [tree]
+              (match tree
+                     nil [:red nil x nil]
+                     [color a y b] (cond
+                                    (< x y) (balance [color (ins a) y b])
+                                    (> x y) (balance [color a y (ins b)])
+                                    :else tree)))
+        [_ a y b] (ins tree)]
+    [:black a y b]))
+
+(defn is-member? [tree x]
+  (match tree
+         nil false
+         [_ a y b] (cond
+                    (< x y) (recur a x)
+                    (> x y) (recur b x)     
+                    :else true)))
 
 (comment
 
-  ;; When core.match supports protocol, this will be
+  ;; When core.match supports protocols, this will be
   ;; awesome.
   
   (defrecord Black [left value right])
