@@ -381,17 +381,6 @@
 
          :else tree))
 
-(def vector-tree
-  [:black [:red
-           [:black nil "a" nil]
-           8
-           [:red
-            [:black nil "b" nil]
-            11
-            [:black nil "c" nil]]]
-   13
-   [:black nil "d" nil]])
-
 (defn balance [tree]
   (match [tree]
          [(:or [:black [:red [:red a x b] y c] z d]
