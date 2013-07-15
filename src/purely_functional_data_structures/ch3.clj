@@ -308,6 +308,12 @@
     (merge-bin-heaps (reverse (decorate-heaps-with-rank min-rank children))
                      rest)))
 
+
+;;
+;; Red-Black trees
+;;
+
+
 (defn rb-mk-tree [color left value right]
   {:color color :left left :value value :right right})
 

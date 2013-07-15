@@ -255,19 +255,21 @@
              expected-min)))))
 
 (defn assert-balanced [balanced]
-          (is (= (:value balanced) "y")) ; root
-          (is (= (:color balanced) :red)) ; root
-          
-          (is (= (-> balanced :left :value) "x")) ; left child
-          (is (= (-> balanced :left :color) :black)) ; left child        
-          (is (= (-> balanced :left :left :value) "a")) ; left's left child
-          (is (= (-> balanced :left :right :value) "b")) ; left's right child
-          
-          (is (= (-> balanced :right :value) "z")) ; right child
-          (is (= (-> balanced :right :color) :black)) ; right child        
-          (is (= (-> balanced :right :left :value) "c")) ; right's left child
-          (is (= (-> balanced :right :right :value) "d")) ; right's left child        
-)
+  (are [x y] (= x (first y))
+       "y"    (:value balanced)
+       :red   (:color balanced)
+
+       "x"    (-> balanced :left :value)
+       :black (-> balanced :left :color)
+
+       "a"    (-> balanced :left :left :value)
+       "b"    (-> balanced :left :right :value)
+
+       "z"    (-> balanced :right :value)
+       :black (-> balanced :right :color)
+
+       "c"    (-> balanced :right :left :value)
+       "d"    (-> balanced :right :right :value))) 
 
 (deftest red-black-trees
   (testing "Map-based red-black trees"
@@ -333,23 +335,21 @@
                     value       (comp z/right z/right z/down)
                     color       z/down]
                 ;; root
-                (is (= (first (-> balanced-zp color)) :red))
-                (is (= (first (-> balanced-zp value)) "y"))
+                (are [x y] (= x (first y))
+                     :red   (-> balanced-zp color)
+                     "y"    (-> balanced-zp value)
 
+                     :black (-> balanced-zp left-child color)
+                     "x"    (-> balanced-zp left-child  value)
 
-                (is (= (first (-> balanced-zp left-child color)) :black))
-                (is (= (first (-> balanced-zp left-child  value)) "x"))
+                     "a"    (-> balanced-zp left-child left-child value)
+                     "b"    (-> balanced-zp left-child right-child value)
 
+                     :black (-> balanced-zp right-child color)
+                     "z"    (-> balanced-zp right-child value)
 
-                (is (= (first (-> balanced-zp left-child left-child value)) "a"))
-                (is (= (first (-> balanced-zp left-child right-child value)) "b"))
-
-
-                (is (= (first (-> balanced-zp right-child color)) :black))
-                (is (= (first (-> balanced-zp right-child value)) "z"))
-
-                (is (= (first (-> balanced-zp right-child left-child value)) "c"))
-                (is (= (first (-> balanced-zp right-child right-child value)) "d"))))]
+                     "c"    (-> balanced-zp right-child left-child value)
+                     "d"    (-> balanced-zp right-child right-child value))))]
 
       (testing "balancing, case 1"
         (let [tree [:black
